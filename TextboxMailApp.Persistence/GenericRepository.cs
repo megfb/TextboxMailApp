@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using TextboxMailApp.Application.Contracts.Persistence;
-using TextboxMailApp.Domain.Entities;
 using TextboxMailApp.Domain.Entities.Common;
 
 namespace TextboxMailApp.Persistence
@@ -30,9 +24,19 @@ namespace TextboxMailApp.Persistence
             return await _dbSet.ToListAsync();
         }
 
+        public virtual async Task<IEnumerable<T>> GetAllByPageAsync(int pageNumber, int pageSize)
+        {
+            return await _dbSet.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+        }
+
         public async Task<T> GetByIdAsync(string id)
         {
             return await _dbSet.FindAsync(id)!;
+        }
+
+        public async Task SaveRangeAsync(IEnumerable<T> entity)
+        {
+            await _dbSet.AddRangeAsync(entity);
         }
 
         public void Update(T entity)

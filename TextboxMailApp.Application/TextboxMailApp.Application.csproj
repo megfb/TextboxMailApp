@@ -10,4 +10,14 @@
     <ProjectReference Include="..\TextboxMailApp.Domain\TextboxMailApp.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\EmailMessages\CommandHandlers\" />
+    <Folder Include="Features\EmailMessages\Commands\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="13.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.8" />
+  </ItemGroup>
+
 </Project>

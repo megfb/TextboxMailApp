@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
-using TextboxMailApp.Domain.Entities;
+﻿using TextboxMailApp.Application.Features.EmailMessages;
 
 namespace TextboxMailApp.Application.Contracts.Persistence
 {
@@ -15,6 +9,8 @@ namespace TextboxMailApp.Application.Contracts.Persistence
         void Delete(T entity);
         Task<IEnumerable<T>> GetAllAsync();
         Task<T> GetByIdAsync(string id);
+        Task<IEnumerable<T>> GetAllByPageAsync(int pageNumber, int pageSize);
+        Task SaveRangeAsync(IEnumerable<T> entity);
 
     }
 }

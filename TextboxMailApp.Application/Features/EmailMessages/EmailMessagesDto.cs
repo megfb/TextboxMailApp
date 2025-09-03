@@ -1,9 +1,8 @@
-﻿using TextboxMailApp.Domain.Entities.Common;
-
-namespace TextboxMailApp.Domain.Entities
+﻿namespace TextboxMailApp.Application.Features.EmailMessages
 {
-    public class EmailMessage : Entity
+    public class EmailMessagesDto
     {
+        public string Id { get; set; }
         public uint Uid { get; set; }
         public string FromName { get; set; } = default!;
         public string FromAddress { get; set; } = default!;
@@ -13,5 +12,7 @@ namespace TextboxMailApp.Domain.Entities
         public string To { get; set; } = default!;
         public string? Cc { get; set; }
         public string Body { get; set; } = default!;
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
     }
 }
