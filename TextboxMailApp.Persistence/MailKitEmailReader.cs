@@ -11,27 +11,38 @@ namespace TextboxMailApp.Persistence
 {
     public class MailKitEmailReader : IEmailReader
     {
-        private readonly string _imapServer = "imap.gmail.com";
-        private readonly int _port = 993;
-        private readonly string _username = "me733017@gmail.com";
-        private readonly string _password = "krhocsllqjkjhegk";
+        //private readonly string _imapServer = "imap.gmail.com";
+        //private readonly int _port = 993;
+        //private readonly string _username = "me733017@gmail.com";
+        //private readonly string _password = "krhocsllqjkjhegk";
+        //private readonly string _imapServer;
+        //private readonly int _port;
+        //private readonly string _username;
+        //private readonly string _password;
 
-        private async Task<ImapClient> ConnectAsync()
-        {
-            var client = new ImapClient();
-            try
-            {
-                await client.ConnectAsync(_imapServer, _port, SecureSocketOptions.SslOnConnect);
-                await client.AuthenticateAsync(_username, _password);
+        //public MailKitEmailReader(string imapServer, int port, string username, string password)
+        //{
+        //    _imapServer = imapServer;
+        //    _port = port;
+        //    _username = username;
+        //    _password = password;
+        //}
+        //private async Task<ImapClient> ConnectAsync()
+        //{
+        //    var client = new ImapClient();
+        //    try
+        //    {
+        //        await client.ConnectAsync(_imapServer, _port, SecureSocketOptions.SslOnConnect);
+        //        await client.AuthenticateAsync(_username, _password);
 
-                return client;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Bağlantı hatası: {ex.Message}");
-                throw;
-            }
-        }
+        //        return client;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($"Bağlantı hatası: {ex.Message}");
+        //        throw;
+        //    }
+        //}
         private string ExtractPlainText(string htmlBody)
         {
             if (string.IsNullOrWhiteSpace(htmlBody))
@@ -42,7 +53,7 @@ namespace TextboxMailApp.Persistence
 
             return doc.DocumentNode.InnerText;
         }
-        private EmailMessagesDto MapToDto(IMessageSummary summary, MimeMessage message)
+        private EmailMessagesDto MapToDto(IMessageSummary summary, MimeMessage message,string id)
         {
             var bodyText = message.TextBody;
 
@@ -61,13 +72,17 @@ namespace TextboxMailApp.Persistence
                 Date = message.Date.DateTime,
                 To = string.Join(",", message.To.Mailboxes.Select(x => x.Address)),
                 Cc = string.Join(",", message.Cc.Mailboxes.Select(x => x.Address)),
-                Body = bodyText
+                Body = bodyText,
+                UserId = id
             };
         }
-
-        public async Task<List<EmailMessagesDto>> GetEmailsByPageAsync(int page, int pageSize = 100)
+        public async Task<List<EmailMessagesDto>> GetEmailsByPageAsync(int page, int pageSize, User user)
         {
-            using var client = await ConnectAsync();
+            var client = new ImapClient();
+
+            await client.ConnectAsync(user.ServerName, user.Port, SecureSocketOptions.SslOnConnect);
+            await client.AuthenticateAsync(user.EmailAddress, user.EmailPassword);
+
             var inbox = client.Inbox;
             await inbox.OpenAsync(FolderAccess.ReadOnly);
 
@@ -96,7 +111,7 @@ namespace TextboxMailApp.Persistence
             foreach (var summary in summaries)
             {
                 var message = await inbox.GetMessageAsync(summary.UniqueId);
-                result.Add(MapToDto(summary, message));
+                result.Add(MapToDto(summary, message,user.Id));
             }
 
             await client.DisconnectAsync(true);
@@ -105,9 +120,12 @@ namespace TextboxMailApp.Persistence
             return result.OrderByDescending(x => x.Uid).ToList();
         }
 
-        public async Task<List<EmailMessagesDto>> GetEmailsAfterUidAsync(uint lastMaxUid)
+        public async Task<List<EmailMessagesDto>> GetEmailsAfterUidAsync(uint lastMaxUid, User user)
         {
-            using var client = await ConnectAsync();
+            var client = new ImapClient();
+
+            await client.ConnectAsync(user.ServerName, user.Port, SecureSocketOptions.SslOnConnect);
+            await client.AuthenticateAsync(user.EmailAddress, user.EmailPassword); 
             var inbox = client.Inbox;
             await inbox.OpenAsync(FolderAccess.ReadOnly);
 
@@ -137,7 +155,7 @@ namespace TextboxMailApp.Persistence
             foreach (var summary in summaries)
             {
                 var message = await inbox.GetMessageAsync(summary.UniqueId);
-                result.Add(MapToDto(summary, message));
+                result.Add(MapToDto(summary, message,user.Id));
             }
 
             await client.DisconnectAsync(true);

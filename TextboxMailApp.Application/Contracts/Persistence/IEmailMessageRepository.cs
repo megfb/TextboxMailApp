@@ -4,7 +4,7 @@ namespace TextboxMailApp.Application.Contracts.Persistence
 {
     public interface IEmailMessageRepository : IGenericRepository<EmailMessage>
     {
-        Task<EmailMessage?> GetLatestAsync();
+        Task<EmailMessage?> GetLatestAsync(string id);
 
     }
 }

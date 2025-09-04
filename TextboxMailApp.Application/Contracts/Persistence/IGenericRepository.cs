@@ -1,6 +1,4 @@
-﻿using TextboxMailApp.Application.Features.EmailMessages;
-
-namespace TextboxMailApp.Application.Contracts.Persistence
+﻿namespace TextboxMailApp.Application.Contracts.Persistence
 {
     public interface IGenericRepository<T>
     {
@@ -9,7 +7,7 @@ namespace TextboxMailApp.Application.Contracts.Persistence
         void Delete(T entity);
         Task<IEnumerable<T>> GetAllAsync();
         Task<T> GetByIdAsync(string id);
-        Task<IEnumerable<T>> GetAllByPageAsync(int pageNumber, int pageSize);
+        Task<IEnumerable<T>> GetAllByPageAsync(int pageNumber, int pageSize,string userId);
         Task SaveRangeAsync(IEnumerable<T> entity);
 
     }

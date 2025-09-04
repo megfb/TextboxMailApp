@@ -24,7 +24,7 @@ namespace TextboxMailApp.Persistence
             return await _dbSet.ToListAsync();
         }
 
-        public virtual async Task<IEnumerable<T>> GetAllByPageAsync(int pageNumber, int pageSize)
+        public virtual async Task<IEnumerable<T>> GetAllByPageAsync(int pageNumber, int pageSize, string userId)
         {
             return await _dbSet.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
         }

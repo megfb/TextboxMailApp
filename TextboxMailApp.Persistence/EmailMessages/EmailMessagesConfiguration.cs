@@ -19,6 +19,7 @@ namespace TextboxMailApp.Persistence.EmailMessages
             builder.Property(x => x.FromName).HasMaxLength(256).IsRequired();
             builder.Property(x => x.To).HasMaxLength(256).IsRequired();
             builder.Property(x => x.Date).IsRequired();
+            builder.HasOne(e => e.User).WithMany(u => u.Emails).HasForeignKey(e => e.UserId);
         }
     }
 }
