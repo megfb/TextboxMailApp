@@ -4,7 +4,7 @@ namespace TextboxMailApp.Api.Extensions
 {
     public static class SwaggerService
     {
-        public static IServiceCollection AddSwaggerService(this IServiceCollection services,IConfiguration configuration)
+        public static IServiceCollection AddSwaggerService(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddSwaggerGen(c =>
             {

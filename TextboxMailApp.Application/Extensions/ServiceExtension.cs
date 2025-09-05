@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using TextboxMailApp.Application.Contracts.Api;
 
 
 namespace TextboxMailApp.Application.Extensions

@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using AutoMapper;
+﻿using AutoMapper;
 using MediatR;
 using TextboxMailApp.Application.Common.Responses;
 using TextboxMailApp.Application.Contracts.Api;

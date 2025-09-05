@@ -7,7 +7,7 @@
         void Delete(T entity);
         Task<IEnumerable<T>> GetAllAsync();
         Task<T> GetByIdAsync(string id);
-        Task<IEnumerable<T>> GetAllByPageAsync(int pageNumber, int pageSize,string userId);
+        Task<IEnumerable<T>> GetAllByPageAsync(int pageNumber, int pageSize, string userId);
         Task SaveRangeAsync(IEnumerable<T> entity);
 
     }

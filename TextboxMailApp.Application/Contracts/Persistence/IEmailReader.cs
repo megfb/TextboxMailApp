@@ -5,8 +5,7 @@ namespace TextboxMailApp.Application.Contracts.Persistence
 {
     public interface IEmailReader
     {
-        Task<List<EmailMessagesDto>> GetEmailsByPageAsync(int page, int pageSize,User user);
-        Task<List<EmailMessagesDto>> GetEmailsAfterUidAsync(uint lastMaxUid,User user);
+        Task<List<EmailMessagesDto>> GetEmailsByPageAsync(int page, int pageSize, User user);
 
     }
 }

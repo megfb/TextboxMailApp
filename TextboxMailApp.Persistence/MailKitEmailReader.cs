@@ -1,7 +1,4 @@
-﻿using HtmlAgilityPack;
-using MailKit;
-using MailKit.Net.Imap;
-using MailKit.Security;
+﻿using MailKit;
 using MimeKit;
 using TextboxMailApp.Application.Contracts.Persistence;
 using TextboxMailApp.Application.Features.EmailMessages;
@@ -47,8 +44,8 @@ namespace TextboxMailApp.Persistence
             // Uid göre azalan sırada döndür
             return result.OrderByDescending(x => x.Uid).ToList();
         }
-     
-        
+
+
         //dto ya çevriliyor
         private EmailMessagesDto MapToDto(IMessageSummary summary, MimeMessage message, string id)
         {
@@ -66,50 +63,6 @@ namespace TextboxMailApp.Persistence
                 Cc = string.Join(",", message.Cc.Mailboxes.Select(x => x.Address)),
                 Body = bodyText,
             };
-        }
-        //yeni gelen bir mail varsa o getiriliyor
-        public async Task<List<EmailMessagesDto>> GetEmailsAfterUidAsync(uint lastMaxUid, User user)
-        {
-            var client = new ImapClient();
-
-            await client.ConnectAsync(user.ServerName, user.Port, SecureSocketOptions.SslOnConnect);
-            await client.AuthenticateAsync(user.EmailAddress, user.EmailPassword); 
-            var inbox = client.Inbox;
-            await inbox.OpenAsync(FolderAccess.ReadOnly);
-
-            // Eğer mailbox boşsa veya UidNext null ise yeni mail yok
-            if (inbox.Count == 0 || !inbox.UidNext.HasValue || inbox.UidNext.Value.Id <= lastMaxUid)
-                return new List<EmailMessagesDto>();
-
-            // UID aralığını belirle
-            var startUidValue = lastMaxUid + 1;
-            var endUidValue = inbox.UidNext.Value.Id - 1;
-
-            if (startUidValue > endUidValue)
-                return new List<EmailMessagesDto>(); // Yeni mail yok
-
-            // UID aralığını listeye çevir
-            var uidRange = new List<UniqueId>();
-            for (uint uid = startUidValue; uid <= endUidValue; uid++)
-            {
-                uidRange.Add(new UniqueId(uid));
-            }
-
-            // Fetch et
-            var summaries = inbox.Fetch(uidRange,
-                MessageSummaryItems.UniqueId | MessageSummaryItems.Envelope | MessageSummaryItems.BodyStructure);
-
-            var result = new List<EmailMessagesDto>();
-            foreach (var summary in summaries)
-            {
-                var message = await inbox.GetMessageAsync(summary.UniqueId);
-                result.Add(MapToDto(summary, message,user.Id));
-            }
-
-            await client.DisconnectAsync(true);
-
-            // UID sırasına göre döndür
-            return result.OrderByDescending(e => e.Uid).ToList();
         }
 
 

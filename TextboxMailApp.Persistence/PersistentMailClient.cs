@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MailKit.Net.Imap;
+﻿using MailKit.Net.Imap;
 using MailKit.Security;
 using TextboxMailApp.Application.Contracts.Persistence;
 using TextboxMailApp.Domain.Entities;
