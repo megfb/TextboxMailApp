@@ -18,11 +18,6 @@ namespace TextboxMailApp.Api.Controllers
         {
             return Ok(await _mediator.Send(new GetLatestEmailsQuery(pageNumber, pageSize)));
         }
-        [HttpGet("RefreshMails")]
-        [Authorize]
-        public async Task<IActionResult> Refresh()
-        {
-            return Ok(await _mediator.Send(new RefreshEmailQuery()));
-        }
+
     }
 }

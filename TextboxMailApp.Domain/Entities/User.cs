@@ -10,7 +10,6 @@ namespace TextboxMailApp.Domain.Entities
         public string EmailPassword { get; set; } = default!;
         public string ServerName { get; set; } = default!;
         public int Port { get; set; }
-        public ICollection<EmailMessage> Emails { get; set; } = new List<EmailMessage>();
 
     }
 }

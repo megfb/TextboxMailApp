@@ -11,11 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\EmailMessages\CommandHandlers\" />
-    <Folder Include="Features\EmailMessages\Commands\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="15.0.1" />
     <PackageReference Include="MailKit" Version="4.13.0" />
     <PackageReference Include="MediatR" Version="13.0.0" />

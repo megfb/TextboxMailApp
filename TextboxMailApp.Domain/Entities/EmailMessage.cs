@@ -13,7 +13,5 @@ namespace TextboxMailApp.Domain.Entities
         public string To { get; set; } = default!;
         public string? Cc { get; set; }
         public string Body { get; set; } = default!;
-        public string UserId { get; set; } = default!; // FK
-        public User? User { get; set; }
     }
 }

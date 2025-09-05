@@ -13,7 +13,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddRepositories(builder.Configuration).AddServices(builder.Configuration)
     .AddMailKitService(builder.Configuration).AddTokenService(builder.Configuration).AddSwaggerService(builder.Configuration).AddJwtService(builder.Configuration);
-//builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 var app = builder.Build();

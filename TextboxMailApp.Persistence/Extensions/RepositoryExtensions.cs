@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TextboxMailApp.Application.Contracts.Persistence;
-using TextboxMailApp.Persistence.EmailMessages;
 using TextboxMailApp.Persistence.Users;
 
 namespace TextboxMailApp.Persistence.Extensions
@@ -13,7 +12,6 @@ namespace TextboxMailApp.Persistence.Extensions
         {
             services.AddDbContext<AppDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddScoped<IEmailMessageRepository, EmailMessageRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
