@@ -7,13 +7,11 @@ namespace TextboxMailApp.Application.Features.EmailMessages.Queries
     {
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
-        public string UserId { get; set; }
 
-        public GetLatestEmailsQuery(int pageNumber, int pageSize,string userId)
+        public GetLatestEmailsQuery(int pageNumber, int pageSize)
         {
             PageNumber = pageNumber;
             PageSize = pageSize;
-            UserId = userId;
         }
 
     }

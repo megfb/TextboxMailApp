@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using TextboxMailApp.Application.Contracts.Api;
 
 
 namespace TextboxMailApp.Application.Extensions
@@ -11,6 +12,7 @@ namespace TextboxMailApp.Application.Extensions
         {
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
             services.AddAutoMapper(cfg => { }, Assembly.GetExecutingAssembly());
+
             return services;
         }
     }

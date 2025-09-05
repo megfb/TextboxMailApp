@@ -9,58 +9,50 @@ using TextboxMailApp.Domain.Entities;
 
 namespace TextboxMailApp.Persistence
 {
-    public class MailKitEmailReader : IEmailReader
+    public class MailKitEmailReader(IPersistentMailClient persistentMailClient) : IEmailReader
     {
-        //private readonly string _imapServer = "imap.gmail.com";
-        //private readonly int _port = 993;
-        //private readonly string _username = "me733017@gmail.com";
-        //private readonly string _password = "krhocsllqjkjhegk";
-        //private readonly string _imapServer;
-        //private readonly int _port;
-        //private readonly string _username;
-        //private readonly string _password;
-
-        //public MailKitEmailReader(string imapServer, int port, string username, string password)
-        //{
-        //    _imapServer = imapServer;
-        //    _port = port;
-        //    _username = username;
-        //    _password = password;
-        //}
-        //private async Task<ImapClient> ConnectAsync()
-        //{
-        //    var client = new ImapClient();
-        //    try
-        //    {
-        //        await client.ConnectAsync(_imapServer, _port, SecureSocketOptions.SslOnConnect);
-        //        await client.AuthenticateAsync(_username, _password);
-
-        //        return client;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine($"Bağlantı hatası: {ex.Message}");
-        //        throw;
-        //    }
-        //}
-        private string ExtractPlainText(string htmlBody)
+        //Sayfalandırma ile mailleri çekiyor
+        public async Task<List<EmailMessagesDto>> GetEmailsByPageAsync(int page, int pageSize, User user)
         {
-            if (string.IsNullOrWhiteSpace(htmlBody))
-                return string.Empty;
+            var client = await persistentMailClient.GetConnectedClientAsync(user);
+            var inbox = client.Inbox;
+            await inbox.OpenAsync(FolderAccess.ReadOnly);
 
-            var doc = new HtmlDocument();
-            doc.LoadHtml(htmlBody);
+            if (inbox.Count == 0)
+                return new List<EmailMessagesDto>();
 
-            return doc.DocumentNode.InnerText;
-        }
-        private EmailMessagesDto MapToDto(IMessageSummary summary, MimeMessage message,string id)
-        {
-            var bodyText = message.TextBody;
+            // Sayfalama için başlangıç ve bitiş indekslerini hesapla
+            int skip = (page - 1) * pageSize;
+            int take = Math.Min(pageSize, inbox.Count - skip); // Alınacak UID sayısını sınırla
 
-            if (string.IsNullOrEmpty(bodyText) && !string.IsNullOrEmpty(message.HtmlBody))
+            if (skip >= inbox.Count || take <= 0)
+                return new List<EmailMessagesDto>();
+
+            // UID'leri tümüyle çekmek yerine, sadece gerekli aralığı al
+            var startIndex = Math.Max(0, inbox.Count - skip - take); // En yeni mesajdan başla
+            var endIndex = Math.Min(inbox.Count - 1, inbox.Count - skip - 1); // Bitiş indeksi
+
+            // UID'leri toplu olarak almak yerine, doğrudan mesaj özetlerini fetch et
+            var summaries = inbox.Fetch(startIndex, endIndex, MessageSummaryItems.UniqueId | MessageSummaryItems.Envelope | MessageSummaryItems.BodyStructure);
+
+            var result = new List<EmailMessagesDto>();
+            foreach (var summary in summaries)
             {
-                bodyText = ExtractPlainText(message.HtmlBody);
+                var message = await inbox.GetMessageAsync(summary.UniqueId);
+                result.Add(MapToDto(summary, message, user.Id));
             }
+
+            await client.DisconnectAsync(true);
+
+            // Uid göre azalan sırada döndür
+            return result.OrderByDescending(x => x.Uid).ToList();
+        }
+     
+        
+        //dto ya çevriliyor
+        private EmailMessagesDto MapToDto(IMessageSummary summary, MimeMessage message, string id)
+        {
+            var bodyText = message.TextBody ?? string.Empty;
 
             return new EmailMessagesDto
             {
@@ -73,53 +65,9 @@ namespace TextboxMailApp.Persistence
                 To = string.Join(",", message.To.Mailboxes.Select(x => x.Address)),
                 Cc = string.Join(",", message.Cc.Mailboxes.Select(x => x.Address)),
                 Body = bodyText,
-                UserId = id
             };
         }
-        public async Task<List<EmailMessagesDto>> GetEmailsByPageAsync(int page, int pageSize, User user)
-        {
-            var client = new ImapClient();
-
-            await client.ConnectAsync(user.ServerName, user.Port, SecureSocketOptions.SslOnConnect);
-            await client.AuthenticateAsync(user.EmailAddress, user.EmailPassword);
-
-            var inbox = client.Inbox;
-            await inbox.OpenAsync(FolderAccess.ReadOnly);
-
-            if (inbox.Count == 0)
-                return new List<EmailMessagesDto>();
-
-            // Tüm UID'leri al
-            var uids = inbox.Search(MailKit.Search.SearchQuery.All);
-
-            // UID'leri büyükten küçüğe sırala (en son gelen en başta)
-            var orderedUids = uids.OrderByDescending(u => u.Id).ToList();
-
-            // Sayfaya göre aralık seç
-            var skip = (page - 1) * pageSize;
-            var take = pageSize;
-
-            var pageUids = orderedUids.Skip(skip).Take(take).ToList();
-            if (!pageUids.Any())
-                return new List<EmailMessagesDto>();
-
-            // UID'lere göre fetch et
-            var summaries = inbox.Fetch(pageUids,
-                MessageSummaryItems.UniqueId | MessageSummaryItems.Envelope | MessageSummaryItems.BodyStructure);
-
-            var result = new List<EmailMessagesDto>();
-            foreach (var summary in summaries)
-            {
-                var message = await inbox.GetMessageAsync(summary.UniqueId);
-                result.Add(MapToDto(summary, message,user.Id));
-            }
-
-            await client.DisconnectAsync(true);
-
-            // Uid göre azalan sırada döndür
-            return result.OrderByDescending(x => x.Uid).ToList();
-        }
-
+        //yeni gelen bir mail varsa o getiriliyor
         public async Task<List<EmailMessagesDto>> GetEmailsAfterUidAsync(uint lastMaxUid, User user)
         {
             var client = new ImapClient();

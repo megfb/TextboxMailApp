@@ -11,7 +11,6 @@ namespace TextboxMailApp.Application.Features.Users.QueryHandlers
         private readonly IPasswordHasher _passwordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));
         private readonly IUserRepository _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
         private readonly ITokenService _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
-        private readonly IMapper _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         public async Task<ApiResult<string>> Handle(LoginQuery request, CancellationToken cancellationToken)
         {
             var user = await _userRepository.GetByUserNameOrEmailAsync(request.UserName, request.UserName);

@@ -12,7 +12,6 @@
         public string To { get; set; } = default!;
         public string? Cc { get; set; }
         public string Body { get; set; } = default!;
-        public string UserId { get; set; } = default!; // FK
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
     }
