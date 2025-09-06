@@ -9,7 +9,7 @@ using TextboxMailApp.Domain.Entities;
 namespace TextboxMailApp.Application.Features.EmailMessages.QueryHandlers
 {
     public class RefreshEmailQueryHandler(IEmailReader emailReader, IEmailMessageRepository emailMessageRepository, IUnitOfWork unitOfWork
-        ,IUserRepository userRepository,ICurrentUserService currentUserService, IMapper mapper) :
+        , IUserRepository userRepository, ICurrentUserService currentUserService, IMapper mapper) :
         IRequestHandler<RefreshEmailQuery, ApiResult<IEnumerable<EmailMessagesDto>>>
     {
         private readonly IMapper _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -28,7 +28,7 @@ namespace TextboxMailApp.Application.Features.EmailMessages.QueryHandlers
             var lastEmail = await _emailMessageRepository.GetLatestAsync(user.Id);
             uint lastUid = lastEmail?.Uid ?? 0;
             //yeni mail varsa kıyaslanması için user ve uid gönderildi. user göndermemin sebebi mail bilgilerine erişmek için.
-            var newEmails = await _emailReader.GetEmailsAfterUidAsync(lastUid,user);
+            var newEmails = await _emailReader.GetEmailsAfterUidAsync(lastUid, user);
             //yeni mail yoksa pas geç
             if (!newEmails.Any())
                 return ApiResult<IEnumerable<EmailMessagesDto>>.Success(new List<EmailMessagesDto>());

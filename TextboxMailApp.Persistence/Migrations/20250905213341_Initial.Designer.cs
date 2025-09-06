@@ -12,7 +12,7 @@ using TextboxMailApp.Persistence;
 namespace TextboxMailApp.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250904142009_Initial")]
+    [Migration("20250905213341_Initial")]
     partial class Initial
     {
         /// <inheritdoc />

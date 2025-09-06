@@ -8,7 +8,7 @@ namespace TextboxMailApp.Persistence.EmailMessages
     {
         private readonly DbSet<EmailMessage> _dbSet = appDbContext.Set<EmailMessage>();
 
-        public override async Task<IEnumerable<EmailMessage>> GetAllByPageAsync(int pageNumber, int pageSize,string userId)
+        public override async Task<IEnumerable<EmailMessage>> GetAllByPageAsync(int pageNumber, int pageSize, string userId)
         {
             return await _dbSet.Where(x => x.UserId == userId).OrderByDescending(e => e.Uid).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
         }
@@ -16,6 +16,11 @@ namespace TextboxMailApp.Persistence.EmailMessages
         public async Task<EmailMessage?> GetLatestAsync(string id)
         {
             return await _dbSet.Where(x => x.UserId == id).OrderByDescending(e => e.Uid).FirstOrDefaultAsync();
+        }
+
+        public async Task<uint?> GetMinUidAsync(string userId)
+        {
+            return await _dbSet.Where(x => x.UserId == userId).MinAsync(x => (uint?)x.Uid);
         }
     }
 }

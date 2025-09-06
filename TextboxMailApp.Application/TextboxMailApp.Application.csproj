@@ -7,12 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TextboxMailApp.Domain\TextboxMailApp.Domain.csproj" />
+    <Compile Remove="Features\EmailMessages\CommandHandlers\**" />
+    <Compile Remove="Features\EmailMessages\Commands\**" />
+    <EmbeddedResource Remove="Features\EmailMessages\CommandHandlers\**" />
+    <EmbeddedResource Remove="Features\EmailMessages\Commands\**" />
+    <None Remove="Features\EmailMessages\CommandHandlers\**" />
+    <None Remove="Features\EmailMessages\Commands\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\EmailMessages\CommandHandlers\" />
-    <Folder Include="Features\EmailMessages\Commands\" />
+    <ProjectReference Include="..\TextboxMailApp.Domain\TextboxMailApp.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
